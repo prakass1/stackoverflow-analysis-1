@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Data</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 66px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h2 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h3 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h4 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h5 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.section h6 {
+  padding-top: 71px;
+  margin-top: -71px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">StackOverflow Analysis</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Overview</a>
+</li>
+<li>
+  <a href="tool.html">Tool</a>
+</li>
+<li>
+  <a href="users.html">Users</a>
+</li>
+<li>
+  <a href="associations.html">Associations</a>
+</li>
+<li>
+  <a href="models.html">Models</a>
+</li>
+<li>
+  <a href="data.html">Data</a>
+</li>
+<li>
+  <a href="repository.html">Repository</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Data</h1>
+
+</div>
+
+
+<div id="source" class="section level3">
+<h3>Source</h3>
+<p>We can obtain the data dumps from which we can extract features as needed. They are publicly available and hosted on <a href="https://archive.org/download/stackexchange" class="uri">https://archive.org/download/stackexchange</a></p>
+<p>The names of the datasets we plan to use are: stackoverflow.com-Posts.7z stackoverflow.com-Comments.7z stackoverflow.com-Users.7z stackoverflow.com-Tags.7z</p>
+<p>Links:</p>
+<ul>
+<li><a href="https://archive.org/download/stackexchange/stackoverflow.com-Comments.7z" class="uri">https://archive.org/download/stackexchange/stackoverflow.com-Comments.7z</a></li>
+<li><a href="https://archive.org/download/stackexchange/stackoverflow.com-Posts.7z" class="uri">https://archive.org/download/stackexchange/stackoverflow.com-Posts.7z</a></li>
+<li><a href="https://archive.org/download/stackexchange/stackoverflow.com-Tags.7z" class="uri">https://archive.org/download/stackexchange/stackoverflow.com-Tags.7z</a></li>
+<li><a href="https://archive.org/download/stackexchange/stackoverflow.com-Users.7z" class="uri">https://archive.org/download/stackexchange/stackoverflow.com-Users.7z</a></li>
+</ul>
+<p>These files contain the actual posts from stack overflow website(queries, solution, etc.). They are cross-referenced in comments using the UniquePostID. The StackOverflow.com posts have several components of which we have considered the following: Questions &amp; answers, Comments( for questions and answers), Users</p>
+</div>
+<div id="structure-of-stack-overflow-posts" class="section level3">
+<h3>Structure of Stack Overflow Posts</h3>
+<p>A short introduction to structure of stack Overflow posts to set the context for the documentation ahead :</p>
+<ul>
+<li>They consist of 3 kinds of texts the users can post : <strong>Questions, Answers and Comments</strong>.</li>
+<li>Question posts have Title and Body.</li>
+<li>Answers also have the question ID they belong to.</li>
+<li>Comments can belong to questions or answers.</li>
+<li>These posts are voted up or down. This cumulative of upvote and downvote is the score a post obtains.</li>
+<li>All kinds of posts can be voted and hence have scores.</li>
+<li>Views is the number of times the question was viewed by the users.</li>
+<li>Posts have tags that can be used to reference them to particular areas.</li>
+</ul>
+<p>In our case, tags become the classes /categories/label that we attempt to predict for an incoming post.</p>
+</div>
+<div id="data-pre-processing" class="section level3">
+<h3>Data Pre-processing :</h3>
+<p>Extraction and XML parsing:</p>
+<ul>
+<li>Extraction of these zip files, provides the respective XML files.</li>
+<li>XML files are parsed in R and the respective CSV’s are created.</li>
+</ul>
+<div id="posts.csv" class="section level4">
+<h4><strong>Posts.csv</strong> :</h4>
+<p>The original extracted Posts file contains approximately 70 GB of data Hence we take only the last 499,999 records (most recent data) by using the command on the Linux terminal. To create Posts.csv, an XML parser in the R library “XML” was used to import the data into a DataFrame. Then, the DataFrame was exported as a csv.</p>
+<p>This list of post Identifiers (ID) from posts.csv was used for matching and extracting relevant entries from the comments file.</p>
+</div>
+<div id="comments.csv" class="section level4">
+<h4><strong>Comments.csv</strong></h4>
+<p>The comments file has PostId as an attribute. We take only those entries in Comments.xml that have respective entries in Posts.xml. This way we remove those comments for which we don’t have the question in the Posts file. To match the comments with the PostIds using which we match the extracted PostID to get all the comments for the posts in consideration.</p>
+<p>Similar to the processing for Posts, an XML parser in the R library “XML” was used to import the data into a DataFrame from Comments_new.xml. Then, the DataFrame was exported as a csv.</p>
+</div>
+<div id="users.csv" class="section level4">
+<h4><strong>Users.csv</strong></h4>
+<p>All users given by the dataset were used. XMl file was processed similar to others to obtain a csv.</p>
+<p>On the whole, our dataset consists of posts for a span of 3 months dating back from October,2018</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
