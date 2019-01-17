@@ -1,0 +1,116 @@
+---
+title: "Associations"
+output: 
+  html_document:
+      theme: readable
+      css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center",
+                      message = FALSE, warning = FALSE)
+```
+
+
+This section consists of some correlation that were discovered in the data as a part of the Exploratory Data Analysis.
+
+### **Correlation between different Features of the Questions **
+
+```{r eval=FALSE} 
+###### Correlations ###############
+library(corrplot)
+score_questions <- questions %>%
+  arrange(desc(Score)) %>%
+  select(Score,AnswerCount,CommentCount,FavoriteCount)
+scoresCol <- cor(score_questions)
+corrplot(scoresCol, method="color",  
+         type="lower", order="hclust", 
+         addCoef.col = "black", # Add coefficient of correlation
+         tl.col="black", tl.srt=0, #Text label color and rotation
+         # hide correlation coefficient on the principal diagonal
+         diag=FALSE )
+```
+
+![](plots/correlations-haslinks-so-on.jpeg)
+
+
+The highest correlation can be seen between favorite count (where users mark it as a bookmark) and scores. However these correlations are suggestive of a small part of stack overflow data. On a larger representative data, we might be able to get actual correlations.
+
+
+### **Association between Scores and Tags** :
+The score feature was converted into a categorical feature by converting numbers < 0 to negative, > 0 to positive and 0 to neutral. Then a Chi-Square test was performed to determine if there is any significant dependence between tags and scores.
+
+    Null Hypothesis: The Score for a question is independent of the Tag.
+    Alternate Hypothesis: The Score and Tag for a question are not independent.
+
+```{r fig.align='center', out.width="50%" }
+# run a chi square test to test if there is an association between Tags and Score
+# first create a table of tags and score categories
+tagscore_table <- table(questions$Tags, questions$ScoreCategory)
+# run the chi sq test
+chisq_score <- chisq.test(tagscore_table)
+# plot a chi sq distribution
+plot(chisq_score)
+```
+
+A Chi-Square test statistic of 2283.065 and a p-value of < 0.00001 were obtained. Thus we can reject th null hypothesis and suggest that the score for a question is dependent on its Tag.
+
+The following visual shows the amount of correlation between the category of scores and each tag.
+
+
+To further understand the results of the Chi-Square test, the residuals are plotted in the table below.
+ 
+```{r eval=FALSE, fig.align='center', out.width="100%"}
+# plot a correlation plot of the chi sq residuals
+corrplot(t(chisq_score$residuals), is.cor = FALSE,
+         method="circle", type="full", tl.col="steelblue", tl.srt=40,
+         title = "Tag~Score Chi Square Test Residuals",
+         mar=c(1, 1, 1, 1) # to view the title correctly
+)
+
+```
+
+![](plots/ChiSqCorrelation.jpeg)
+
+**Interpretation:** The large circle indicate the sections where the Observed value differs greatly from the Expected value. For example, for the tag python, the Observed number of questions with positive scores was significantly greater than the Expected. Similarly, for the tag R, the Observed number of negative scores was significantly lower than the Expected.
+
+The table below show the actual numbers of the Chi Square test residuals.
+
+```{r eval=FALSE, fig.align='center', out.width="100%", echo=FALSE}
+# plot the chi sq residuals in a table
+grid.arrange(
+    tableGrob(round(t(chisq$residuals), digits = 2), theme = tt3)
+)
+
+```
+![](plots/ChiSqCorrTable.jpeg)
+
+An example interpretation is C shows a positive association to negative scores meaning C questions tend to obtain negative scores more often than not. This could also indicate C questions are complex to understand or rather old and an answer might already be there in the platform.
+
+
+###**View Counts v/s Scores for Questions**
+
+```{r fig.align='center', out.width="60%"}
+# ViewCount Score correlation
+questions %>%
+    # remove a few outliers
+    filter(Score < 100) %>%
+    ggplot(aes(Score, ViewCount)) +
+        geom_jitter(color='firebrick4', size = 0.4) +
+        # fit a regression line
+        geom_smooth(method='lm') +
+        # scale the y axis
+        scale_y_log10() +
+        scale_x_continuous(breaks = pretty(questions$Score, n = 50)) +
+        labs(title = "Plot of Question View Counts and Scores",
+             y = "View Counts", x = "Score") +
+        theme_bw() +
+        theme(axis.text.x = element_text(face = "bold", size=12, angle = 60),
+              axis.text.y = element_text(face = "bold", size=12, angle=0),
+              plot.title = element_text(size=15), legend.position="none")
+
+
+```
+
+The plot is suggestive of a postive correlation between the scores and views of questions. There could be a causal relationship between these two as well. High scored questions may appear in Google searches more often, and in turn get more views.
+

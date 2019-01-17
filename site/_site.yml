@@ -1,0 +1,20 @@
+name: "StackOverflow Analysis"
+navbar:
+  title: "StackOverflow Analysis"
+  left:
+    - text: "Overview"
+      href: index.html
+    - text: "Tool"
+      href: tool.html
+    - text: "Users"
+      href: users.html
+    - text: "Associations"
+      href: associations.html
+    - text: "Models"
+      href: models.html
+    - text: "Data"
+      href: data.html
+    - text: "Report"
+      href: process_notebook.html
+    - text: "Repository"
+      href: repository.html

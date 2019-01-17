@@ -1,0 +1,149 @@
+---
+title: "Models"
+output: 
+  html_document:
+      theme: readable
+      css: style.css
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center",
+                      message = FALSE, warning = FALSE)
+```
+
+
+
+In this section, we describe the overview of the modelling techniques and their performances for tag prediction. Classification and topic modelling approaches were utilised  to model our solution.
+
+
+These chord diagram represent the misclassification patterns for different models.
+
+
+###**SVM** :
+```{r fig.align='center', out.width="90%"}
+
+cols = c("red", "blue", "purple", "pink", "orange", "green", "steelblue1",
+         "green4", "cyan", "royalblue", "magenta", "yellow", "steelblue4", "blue4", "olivedrab")
+# svm chord diagram
+chordDiagram(svm_class_table, grid.col = cols)
+```
+
+
+This model classified most of CSS questions as HTML, most of Jquery questions as javascript. Majority of HTML misclassification comprises of being classified into javascript. These languages tend to be used together frequently and perhaps be part of same question many times.
+
+
+###**Multinomial Naive Bayes**:
+
+```{r fig.align='center', out.width="90%"}
+cols = c("red", "blue", "purple", "pink", "orange", "green", "steelblue1",
+         "green4", "cyan", "royalblue", "magenta", "yellow", "steelblue4", "blue4", "olivedrab")
+# naive bayes chord diagram
+chordDiagram(nb_class_table, grid.col = cols)
+```
+
+Similarly the misclassfications in the Naive Bayes can be attributed to languages being used together more often than not are confused as one another. 
+
+
+###**LDA** :
+```{r eval=FALSE}
+#main function that draws the diagram. transparancy goes from 0-1
+chordDiagram(source_topic_relationship, transparency = 0.5,
+             preAllocateTracks = list(track.height = 0.09), grid.col = grid.col)
+title("Relationship Between Topic and Source")
+#Clear the circos plot
+circos.clear()
+```
+
+![](plots/LDA.jpeg)
+
+So, also is the case with LDA where it mixes up words from HTML and CSS into topic 4, Topic 9 consists of a small part of HTML words and Jquery. 
+
+The misclassification patterns are similar across all the models. This can be addressed by identifying better discriminator vocabularies for co-occuring technologies.
+
+##**Performances**
+
+We have made 80-20 train-test split.
+All the classifiers were trained on the nouns extracted from the posts. 
+And converted them into TF-IDF vectors to be used as instances training and testing.
+
+**Parameters:**
+
+ * SVM : default parameters with kernel set to Linear
+ * Naive Bayes : defaults
+ * Nearest Mean : defaults
+
+**Training times:**
+Longest to shortest 
+
+ * SVM 
+ * Nearest Mean 
+ * Naive Bayes
+
+**Best Accuracies:**
+
+ * SVM - ~ 73%
+ * Naive Bayes - ~ 69%
+ * Nearest Mean - ~ 63%
+
+
+
+The detailed tabulation of the classifiers' performance also has been added in the following section. There we can see what was the performane for each class for a classifier.
+
+###**SVM Linear**
+
+```{r fig.align='center', out.width="70%"}
+confusion_matrix_svm$overall[1:4] %>% round(2)
+```
+
+```{r fig.align='center', out.width="70%"}
+knitr::kable(confusion_matrix_svm$byClass %>% round(2))
+```
+
+```{r fig.align='center', out.width="70%"}
+# svm confusion matrix visual
+qplot(y_test, predictions_svm, colour=y_test, size=I(0.01), geom = c("boxplot", "jitter"),
+    main = "SVM Predicted Classes vs Observed", xlab = "Observed", ylab = "Predicted") + 
+    theme_bw() +
+    theme(axis.text=element_text(size=12),
+          axis.text.x = element_text(face = "bold", size=10, angle = 30),
+          axis.text.y = element_text(face = "bold", size=10, angle=30),
+          plot.title = element_text(size=15), legend.position="none")
+```
+
+
+###**Multinomial Naive Bayes**
+
+```{r fig.align='center', out.width="70%"}
+confusion_matrix_nb$overall[1:4] %>% round(2)
+```
+
+```{r fig.align='center', out.width="70%"}
+knitr::kable(confusion_matrix_nb$byClass %>% round(2))
+```
+
+
+```{r fig.align='center', out.width="70%"}
+qplot(test_y_nb, predictions_nb, colour=test_y_nb,  size=I(0.01), geom = c("boxplot", "jitter"), 
+    main = "Naive Bayes Predicted Classes vs Observed", 
+    xlab = "Observed", ylab = "Predicted") + 
+    theme_bw() +
+    theme(axis.text=element_text(size=12),
+          axis.text.x = element_text(face = "bold", size=10, angle = 30),
+          axis.text.y = element_text(face = "bold", size=10, angle=30),
+          plot.title = element_text(size=15), legend.position="none")
+```
+
+### **Comparison of Classifiers**
+
+```{r fig.align='center', out.width="60%"}
+ggplot(melt(all_scores), aes(fill=Model, y=value, x=variable)) + 
+    geom_bar(position="dodge", stat="identity", width = 0.4) +
+    scale_y_continuous(breaks = seq(0, 1, len = 30) %>% round(2)) +
+    labs(x = "", y = "", title = "Accuray and Kappa Scores for 3 Classifiers") +
+    theme_bw() +
+    theme(axis.text=element_text(size=12),
+          axis.text.x = element_text(face = "bold", size=15),
+          axis.text.y = element_text(face = "bold", size=10),
+          plot.title = element_text(size=15))
+```
+

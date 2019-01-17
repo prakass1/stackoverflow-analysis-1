@@ -1,0 +1,83 @@
+---
+title: "Data"
+output: 
+  html_document:
+      theme: readable
+      css: style.css
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center",
+                      message = FALSE, warning = FALSE)
+```
+
+
+### Source
+We can obtain the data dumps from which we can extract features as needed.
+They are publicly available and hosted on https://archive.org/download/stackexchange
+
+The names of the datasets we plan to use are:
+stackoverflow.com-Posts.7z
+stackoverflow.com-Comments.7z
+stackoverflow.com-Users.7z
+stackoverflow.com-Tags.7z
+
+Links:
+
+* https://archive.org/download/stackexchange/stackoverflow.com-Comments.7z
+* https://archive.org/download/stackexchange/stackoverflow.com-Posts.7z
+* https://archive.org/download/stackexchange/stackoverflow.com-Tags.7z
+* https://archive.org/download/stackexchange/stackoverflow.com-Users.7z
+
+These files contain the actual posts from stack overflow website(queries, solution,  etc.). They are cross-referenced in comments using the UniquePostID.
+The StackOverflow.com posts have several components of which we have considered the following:
+Questions & answers,
+Comments( for questions and answers),
+Users 
+
+
+### Structure of Stack Overflow Posts 
+
+A short introduction to structure of stack Overflow posts to set the context for the documentation ahead :
+
+ * They consist of 3 kinds of texts the users can post : **Questions, Answers and Comments**. 
+ * Question posts have Title and Body.
+ * Answers also have the question ID they belong to.
+ * Comments can belong to questions or answers.
+ * These posts are voted up or down. This cumulative of upvote and downvote is the score a post obtains.
+ * All kinds of posts can be voted and hence have scores.
+ * Views is the number of times the question was viewed by the users.
+ * Posts have tags that can be used to reference them to particular areas.
+
+In our case, tags become the classes /categories/label that we attempt to predict for an incoming post. 
+
+### Data Pre-processing :
+
+Extraction and XML parsing:
+
+* Extraction of these zip files, provides the respective XML files.
+* XML files are parsed in R and the respective CSV's are created.
+
+
+####**Posts.csv** :
+
+The original extracted Posts file contains approximately 70 GB of data
+Hence we take only the last 499,999 records (most recent data) by using the
+command on the Linux terminal. To create Posts.csv, an XML parser in the R library "XML" was used to import the data into a DataFrame. Then, the DataFrame was exported as a csv.
+
+This list of post Identifiers (ID) from posts.csv was used for matching and extracting relevant entries from the comments file. 
+
+####**Comments.csv**
+
+The comments file has PostId as an attribute. We take only those entries in Comments.xml that have respective entries in Posts.xml. This way we remove those comments for which we don't have the question in the Posts file. To match the comments with the PostIds using which we match the extracted PostID to get all the comments for the posts in consideration.
+
+Similar to the processing for Posts, an XML parser in the R library "XML" was used to import the data into a DataFrame from Comments_new.xml. Then, the DataFrame was exported as a csv.
+
+####**Users.csv**
+
+All users given by the dataset were used. XMl file was processed similar to others to obtain a csv.
+
+On the whole, our dataset consists of posts for a span of 3 months dating back from October,2018
+
+

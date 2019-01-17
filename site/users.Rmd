@@ -1,0 +1,62 @@
+---
+title: "Users"
+output: 
+    html_document:
+      theme: readable
+      css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center",
+                      message = FALSE, warning = FALSE)
+```
+
+Users data in a nutshell.
+
+
+### **Stack Overflow encompasses users from all over the world.**
+
+```{r out.width="80%", message=FALSE, warning=FALSE}
+plot_geo(locations, sizes = c(1, 500)) %>%
+    add_markers(
+        x = ~lon, y = ~lat, size = ~n, color = ~n, hoverinfo = "text",
+        text = ~paste(locations$Location)
+    ) %>%
+    layout(title = 'User Locations', geo = g)
+
+```
+
+
+### **The majority of Stack Overflow users are males.** :
+
+```{r fig.align='center', out.width="60%"}
+ggplot(genders, aes(x = factor(1), fill = factor(gender))) +
+    geom_bar(width = 1) +
+    coord_polar(theta = "y") +
+    labs(x = "", y = "", title = "Gender Distribution") +
+    scale_fill_manual(name = "Gender", values=c("brown3", "slateblue")) +
+    theme_bw() +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())
+```
+
+
+
+### **Word Cloud of Users' AboutMe Sections** 
+Users speak about their inclination and enthusiasm towards technology in their profiles !
+A big number of them are programmers :)
+```{r fig.align='center', out.width="110%"}
+dfm_aboutme <- users$TidyAboutMe %>%
+    quanteda::tokens() %>%
+    dfm() %>%
+    dfm_trim(min_termfreq = 10, verbose = FALSE)
+# plot a wordcloud
+set.seed(100)
+textplot_wordcloud(dfm_aboutme, max_words = 200, rotation = 0.25,
+                   color = c('blue', 'green', 'purple'))
+```
+
+This forum encompasses users of various domains. This is visualization of  "About me" section from the users profiles, to obtain most prominent words using a word cloud. This helps see what areas and skills are dominant based on the users who have provided the details.
+
+

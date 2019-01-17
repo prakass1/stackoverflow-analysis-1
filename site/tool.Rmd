@@ -1,0 +1,19 @@
+---
+title: "Tool"
+output: 
+  html_document:
+      theme: readable
+      css: style.css
+---
+      
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center",
+                      message = FALSE, warning = FALSE)
+```
+
+
+
+<iframe style="display: block; margin-left: auto; margin-right: auto;" 
+width=600 height=400 src="https://tchanda90.shinyapps.io/tag_recommendation_app/"
+frameborder="0" allowfullscreen></iframe>
+

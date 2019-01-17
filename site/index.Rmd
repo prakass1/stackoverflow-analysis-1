@@ -1,0 +1,297 @@
+---
+title: "Overview"
+output: 
+  html_document:
+      theme: readable
+      css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center",
+                      message = FALSE, warning = FALSE)
+
+load("latest.RData")
+library("tidyverse")
+library("magrittr")
+library("readr")
+library("plotly")
+library("tidyr")
+library("readr")
+library("textclean")
+library("dplyr")
+library("XML")
+library("tm")
+library("textmineR")
+library("gsubfn")
+library("SnowballC")
+library("textstem")
+library("gridExtra")
+library("NLP") 
+library("openNLP")
+library("text2vec")
+library("tidytext")
+library("tm")
+library("glmnet")
+library("ggmap")
+library("sentimentr")
+library("wordcloud")
+library("gender")
+library("stringr")
+library("gsubfn")
+library("ggplot2")
+library("stringr")
+library("lubridate")
+library("rvest")
+library("corrplot")
+library("magrittr")
+library("shiny")
+library("leaflet")
+library("widyr")
+library("ggraph")
+library("igraph")
+library("udpipe")
+library("h2o")
+library("RTextTools")
+library("rvest")
+library("probsvm")
+library("klaR")
+library("circlize")
+library("quanteda")
+library("caret")
+library("LDAvis")
+
+```
+
+
+<br>
+<br>
+
+<iframe style="display: block; margin-left: auto; margin-right: auto;" 
+width=600 height=400 src="https://www.youtube.com/embed/4fezPWOaXNY"
+  frameborder="0" allowfullscreen></iframe>
+
+
+
+
+
+
+<br>
+<br>
+
+##**Motivation**
+
+The visibility of stackoverflow posts can be enhanced by applying relevant tags to the posts. About a third of the questions remain without accepted answers or votes. A new user who is not well versed with the platform may not be able to enjoy full benefit of the forum due to lack of fundamental information on usage. In such a scenario, tag recommendation comes as a helpful tool. This being our motivation, through this project, we have attempted to recommend 1-most appropriate tag for a post based on the textual content  and the title of the post. Our tags are relevant pertaining to stack overflow, as our models learn from the past posts of stack overflow.
+
+
+##**Research Questions**
+
+We set out to answer the following questions with our project 
+
+	* In which parts of the world is Stack Overflow mostly used? 
+	* What are the top 10 common categories?
+	* What is the overall sentiment of users grouped by topic? 
+	* What are the most upvoted question tags?
+	* Is sentiment of answers/comments correlated with the number of upvotes or downvotes?
+
+
+
+##**Questions**
+
+### **Frequently Co-occurring Nouns in Questions**
+
+```{r fig.align='center', out.width="60%"}
+# create a cooccuring terms graph
+desc_word_pairs %>%
+    filter(n >= 160) %>%
+    graph_from_data_frame() %>%
+    ggraph(layout = "fr") +
+    geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour = "cyan4") +
+    geom_node_point(size = 2) +
+    geom_node_text(aes(label = name), repel = TRUE,
+                   point.padding = unit(0.2, "lines")) +
+    labs(title="Most Co-occuring Words in Questions") +
+    theme_void() +
+    theme(plot.title = element_text(hjust = 0.5))
+```
+This co-occuring terms visualization was an attempt at understanding if co-occuring words can be a factor for predicting tags.  It can be seen that when we follow the highly frequent edges in the graph, we can form pseudo questions.
+
+###**Wordcloud for Question Titles Overall**
+
+![](plots/title-word-cloud.jpeg)
+
+### **Boxplot of View Counts for Questions of each Tag**
+
+```{r fig.align='center', out.width="60%"}
+
+# plot question ViewCount for each tag
+ggplot(questions, aes(x = Tags, y = ViewCount, fill = Tags)) +
+    geom_boxplot() +
+    scale_y_continuous(limits = c(0, 200)) +
+    labs(title = "Question View Counts per Tag", y = "View Count", x = NULL) +
+    #theme_bw() +
+    theme(axis.text.x = element_text(face = "bold", size=12, angle = 60),
+          axis.text.y = element_text(face = "bold", size=12, angle=0),
+          plot.title = element_text(size=15), legend.position="none") +
+    scale_fill_discrete(name = "Tags")
+```
+
+View counts distribution for questions from each tag. C and C++ questions tend to get viewed more often than others. This could be due to the extremely large user base of c and c++. JQuery questions get the least amount of views.
+
+
+### **Time Series of Frequency of Questions**
+
+Here we have considered the data from 2017 to examine the progression of the number of question for a few tags over a month.
+```{r fig.align='center', out.width="100%"}
+# time series for dec 17
+p1 <- dec17 %>%
+    filter(Tags %in% c('python', 'javascript', 'java', 'c#', 'android')) %>%
+    group_by(Tags) %>%
+    ggplot(aes(x = date, y = n, color = Tags)) +
+    geom_line() +
+    geom_text(aes(label=day),hjust=0, vjust=0, size=1.8) +
+    labs(x = "Date", y = "Count",
+         title = "Number of Questions per Day for December 2017") +
+    theme(axis.text.x = element_text(angle = 60, vjust = 0.5)) +
+    scale_x_date(date_breaks = "2 days", date_labels = "%b %d")
+
+# time series for jan 18
+p2 <- jan18 %>%
+    filter(Tags %in% c('python', 'javascript', 'java', 'c#', 'android')) %>%
+    group_by(Tags) %>%
+    ggplot(aes(x = date, y = n, color = Tags)) +
+    geom_line() +
+    geom_text(aes(label=day),hjust=0, vjust=0, size=1.8) +
+    labs(x = "Date", y = "Count",
+         title = "Number of Questions per Day for January 2018") +
+    theme(axis.text.x = element_text(angle = 60, vjust = 0.5)) +
+    scale_x_date(date_breaks = "2 days", date_labels = "%b %d")
+
+# plot combined time series
+grid.arrange(p1, p2)
+
+```
+
+This plot shows a pattern of the number of question dipping during the weekend while being the highest during weekdays. This pattern is commonly observed for questions of all Tags. This observation is inline with active working days patterns in most countries worldwide. Also during the end of December is observed as a holiday period and there is decrease in the number of question as compared to the month of January.
+
+##**Tags** :
+
+###**Tag Distribution** :
+
+```{r eval=FALSE} 
+####### Pie Chart a Distribution#############
+Tags_freq <- count(questions,Tags)
+
+calcPercFreq <- function(x){
+  return((x/nrow(questions)) * 100)
+}
+
+Tags_freq['n'] <- apply(Tags_freq['n'],1,calcPercFreq)
+
+library("plotly")
+p <- plot_ly(Tags_freq, labels = ~Tags, values = ~n, type = 'pie') %>%
+  layout(title = 'Percentage of Tag Distribution in the Dataset',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+```
+
+![Distribution of the tags in our dataset](plots/total-tag-dist.jpeg)
+
+The dataset is imbalanced with python, javascript as top-2 dominant classes.
+
+
+### **Average Score of Questions per Tag**:
+
+Score = (#upvotes - #downvotes).
+Figure for Average scores for a tag based on all the questions w.r.t the tag.
+
+```{r fig.align='center', out.width="60%"}
+ggplot(tags_summary, aes(x=reorder(Tags, avg_score), y=avg_score, fill=Tags)) +
+    geom_bar(stat = "identity", width = 0.8) +
+    coord_flip() +
+    #djsjn
+    labs(title = "Average Score per Tag", y = "Average Score", x = NULL) +
+    theme_bw() +
+    theme(axis.text.y = element_text(face = "bold", size=12, angle=0),
+          plot.title = element_text(size=15), legend.position="none") +
+    scale_fill_discrete(name = "Tags")
+```
+
+The score could be an indication of importance of a question or the quality of the question. An upvoted question could mean other people wanted an answer to that while a down vote could mean an already covered topic or poorly constructed question.
+
+R and Python are amongst the top scored programming languages according to our data.
+
+
+###**Average Comment Counts of Questions per Tag** :
+
+The average number of comments on the questions per tag.
+
+```{r fig.align='center', out.width="60%"}
+# plot average number of comments per question for each tag
+ggplot(tags_summary, aes(x=reorder(Tags, avg_comment_count), y=avg_comment_count, fill=avg_comment_count)) +
+    geom_bar(stat = "identity", width = 0.8) +
+    coord_flip() +
+    labs(title = "Average Number of Comments per Question for each Tag", y = "Average Number of Comments", x = NULL) +
+    theme_bw() +
+    theme(axis.text.y = element_text(face = "bold", size=12, angle=0),
+          plot.title = element_text(size=15), legend.position="none") +
+    scale_fill_continuous(name = "Comment Count")
+```
+
+C and C++ are the highest relative to other tags, eventhough they are not the most  frequent of tags. Possible interpretation being they are harder programming languages and there are more follow up comments to obtain better understanding of the question.
+
+###**Average Answer Count for Questions per Tag** :
+
+Average number of answers per question for each tag.
+```{r fig.align='center', out.width="60%"}
+# plot average number of answers per question for each tag
+ggplot(tags_summary, aes(x=reorder(Tags, avg_answer_count), y=avg_answer_count, fill=avg_answer_count)) +
+    geom_bar(stat = "identity", width = 0.8) +
+    coord_flip() +
+    labs(title = "Average Number of Answers per Question for each Tag", y = "Average Number of Answers", x = NULL) +
+    theme_bw() +
+    theme(axis.text.y = element_text(face = "bold", size=12, angle=0),
+          plot.title = element_text(size=15), legend.position="none") +
+    scale_fill_continuous(name = "Answer Count")
+```
+This distribution is indicative of Sql and C being in use for a very long time and hence have larger user base. Understandably they are leading the average answer count ditsribution.
+
+### **Places the Tags are Popular in**
+
+This plot shows the cities or places the tags are popular in.
+
+```{r fig.align='center', out.width="60%"}
+# plot popular locations for 4 tags
+ggplot(tag_loc, aes(x=reorder(Var1, Freq), y = Freq, fill = Tags)) +
+    geom_bar(stat = "identity", width = 0.6) +
+    geom_text(aes(label=Var1),
+              position=position_dodge(width=1),
+              vjust="inward", hjust="inward", angle=0, size = 4) +
+    coord_flip() +
+    facet_wrap(~Tags, scales = "free") +
+    labs(colour = "proportion", x = NULL, y = NULL, title = "Popular Tag Locations") +
+    theme_gray() +
+    theme(strip.text.x = element_text(size = 20),
+          axis.text.y = element_blank(),
+          plot.title = element_text(size=15), legend.position="none")
+```
+
+The x axis indicates the percentage of the total number of questions in that particular tag. This has been plotted only for a few tags.
+
+
+###**Average Sentiments towards Questions of Tags based on Comments **
+```{r fig.align='center', out.width="70%", message=FALSE, warning=FALSE }
+# avg sentiment of comments grouped by tag
+ggplot(questions, aes(x = Tags, y = SentimentOfComments, fill = Tags)) +
+    #geom_bar(stat="identity", width = 0.7) + 
+    geom_violin() +
+    theme_bw() +
+    theme(axis.text.x = element_text(face = "bold", size=12, angle=60),
+          plot.title = element_text(size=15)) +
+    scale_fill_discrete(name = "Tags") +
+    labs(x = "Tags", y = "Average Sentiment of Comments", title = "Average Sentiment towards Tags")
+```
+
+
+The sentiment scores are heavily lodged around zero. This could be due to lack of a lexicon to identify sentiments pertaining to technical text or rather due to the nature of technical posts that are usually neutral and on point. May be be assigning different range of sentiments like "gratitude" for thank you and so on can help classify these sentiments better..
+
