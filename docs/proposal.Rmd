@@ -1,0 +1,209 @@
+---
+title: "Proposal for Analysis and Tag Prediction for Stack Overflow Posts"
+output:
+  html_document: default
+  github_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Team :
+
+Subash Prakash <br>
+Tirtha Chanda <br>
+Neetha Jambigi <br>
+
+## Motivation and Background
+We have chosen Stack Overflow, the most popular and global online Q&A forum for technology as our topic. This forum covers a vast range of domains and technologies and is a go-to forum for seeking solutions w.r.t. old and new technologies. This forum has an overwhelming number of users and activities for the technical domain. As we use Stack Overflow in our day-to-day activities, the results for us will be relatable. We intend to use several components and features of Stack Overflow, to gain an overview of a very small section of the posts. Features like tags are used to categorize the posts and make them discoverable easily. Assigning specific tags for a post is very important as it may affect aspects like answer duration and so on. Hence as a part of our project, we aim to predict tags for a post using the features of the post. Also, the popularity of the post may be correlated to aspects like the topic being addressed by the post. We want to find and analyze these possible correlations from the data.<br>
+
+Being a global platform, by visualizing the users' data we gain an overview of the platform's prevalence in different geographies.
+
+
+
+
+
+## Project Objectives :
+
+We will extract the necessary features from the original dataset and Perform an exploratory analysis of the data to gain insights into the following questions:<br>
+
+* In which parts of the world is StackOverflow mostly used? <br>
+* What are the top 10 common categories?<br>
+* What is the overall sentiment of users grouped by topic? <br>
+* What are the most upvoted question tags?<br>
+* Is sentiment of answers/comments correlated with the number of upvotes or downvotes?<br>
+
+**Predictive modelling**
+
+Given a question, can we predict the most suitable tags?
+Understanding and exploring the state of the art.
+
+
+
+## Related Work :
+
+After a bit of research about stack overflow, we chose this papers as start of our project idea.
+This paper is one of our primary references:
+
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.399.7835
+
+
+
+## Datasets :
+
+We can obtain their data dumps from which we can extract features as needed.
+They are publicly available and hosted on https://archive.org/download/stackexchange
+
+The names of the datasets we plan to use are:
+stackoverflow.com-Posts.7z
+stackoverflow.com-Comments.7z
+stackoverflow.com-Users.7z
+stackoverflow.com-Tags.7z
+
+Links:
+
+* https://archive.org/download/stackexchange/stackoverflow.com-Comments.7z
+* https://archive.org/download/stackexchange/stackoverflow.com-Posts.7z
+* https://archive.org/download/stackexchange/stackoverflow.com-Tags.7z
+* https://archive.org/download/stackexchange/stackoverflow.com-Users.7z
+
+These files contain the actual posts from stack overflow website(queries, solution,  etc.). They are cross-referenced in comments using the UniquePostID.
+The StackOverflow.com posts have several components of which we have considered the following:
+Questions & answers,
+Comments( for questions and answers),
+Tags (which indicate the relevance to topics for questions, answers and comments),  
+Users details
+
+## Data Pre-processing :
+
+Extraction and XML parsing:
+
+* Extraction of these zip files, provides the respective XML files.
+* XML files are parsed in R and the respective CSV's are created.
+
+**Posts.csv** :
+
+The original extracted Posts file contains approximately 70 GB of data
+Hence we take only the last 499,999 records (most recent data) by using the
+ *tail -500000 Posts.xml*
+command on the Linux terminal. To create Posts.csv, an XML parser in the R library "XML" was used to import the data into a DataFrame. Then, the DataFrame was exported as a csv.
+
+This list of post Identifiers (ID) from posts.csv was used for matching and extracting relevant entries from the comments file. 
+
+**Comments.csv**
+
+Logically the comment for any post appears after the post has been created.
+Comments file also being very large, we try to process only the rows that are chronologically after the creation date of the 1st post we consider. 
+
+Get the CreationDate for the first post in the posts.xml
+Then use the date, to get the line number from the Comments.xml.
+Then we use the tail command to extract the relevant rows from the comments file
+
+*grep -n "CreationDate" comments.xml | head -1*
+Result is line number 
+
+*wc -l comments.xml*
+Result is total numer of lines in comments.xml
+
+*"Lines to get from comments"  = "total number of lines in comments" - "first line of creation date extracted"*
+*tail -#Lines to get from comments comments.xml > comments_new.xml*
+
+
+The comments file has PostId as an attribute. We take only those entries in Comments.xml that have respective entries in Posts.xml. This way we remove those comments for which we don't have the question in the Posts file. To match the comments with the PostIds using which we match the extracted PostID to get all the comments for the posts in consideration.
+
+Similar to the processing for Posts, an XML parser in the R library "XML" was used to import the data into a DataFrame from Comments_new.xml. Then, the DataFrame was exported as a csv.
+
+
+
+## Design overview (algorithms and methods)
+
+Incremental Naive Bayes for classification<br>
+LDA for tag prediction<br>
+Significance testing - eg chi square<br>
+
+Time plan including distribution of responsibilities and workload among team members written as weekly deadline
+
+
+
+## Time Plan:
+
+
+<style>
+table {
+    width: 100%;
+}
+th {
+    height: 50px;
+}
+</style>
+
+
+
+<table class="table table-bordered" style="border-collapse: collapse;">
+<tbody>
+<tr>
+<td><strong>Activity</strong></td>
+<td><span><strong>By date</strong></span></td>
+<td><strong>Applicable Person</strong></td>
+</tr>
+<tr>
+<td><span>Data Collection and Pre-processing</span></td>
+<td><span>16.11.2018</span></td>
+<td>
+<p><span>Tirtha - Worked with preprocessing xmls</span></p>
+<p><span>Subash Prakash - Worked with integration of r code </span></p>
+</td>
+</tr>
+<tr>
+<td><span>Data wrangling</span></td>
+<td><span>23.11.2018</span></td>
+<td><span>Neetha</span></td>
+</tr>
+<tr>
+<td><span>Exploratory Data Analysis and Visualization</span></td>
+<td><span>04.12.2018</span></td>
+<td>
+<p><span>Tirtha, Subash, Neetha</span></p>
+</td>
+</tr>
+<tr>
+<td><span>Hypothesis formation</span></td>
+<td><span> 07.12.2018</span></td>
+<td>
+<p><span>Neetha,Tirtha,Subash </span></p>
+</td>
+</tr>
+<tr>
+<td><span>Build predictive model</span></td>
+<td><span> 24.12.2018</span></td>
+<td>
+<p><span>Tirtha, Subash, Neetha</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span>Website Content and Predictive Modelling</span></p>
+</td>
+<td><span>26.12.2018</span></td>
+<td>
+<p><span>Tirtha, Subash, Neetha</span></p>
+</td>
+</tr>
+<tr>
+<td><span>Bug Fixes and Testing</span></td>
+<td><span>31.12.2018</span></td>
+<td>
+Neetha</td>
+</tr>
+<tr>
+<td><span>Visualization</span></td>
+<td><span>01.01.2019</span></td>
+<td>
+<p><span>Tirtha, Subash, Neetha</span></p>
+
+</td>
+
+</tbody>
+</table>

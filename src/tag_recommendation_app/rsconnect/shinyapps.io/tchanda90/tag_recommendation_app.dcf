@@ -1,0 +1,10 @@
+name: tag_recommendation_app
+title:
+username:
+account: tchanda90
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 648196
+bundleId: 1818433
+url: https://tchanda90.shinyapps.io/tag_recommendation_app/
+when: 1547670200.53008
